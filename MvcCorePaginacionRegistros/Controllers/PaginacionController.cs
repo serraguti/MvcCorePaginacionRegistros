@@ -24,12 +24,11 @@ namespace MvcCorePaginacionRegistros.Controllers
             {
                 posicion = 1;
             }
-            int numeroregistros = this.repo.GetNumeroRegistrosLocalidad("LOCALIDAD");
-            int numeroregistros = this.repo.GetNumeroRegistrosNombre("NOMBRE");
-
-            ViewData["NUMEROREGISTROS"] = numeroregistros;
+            int numeroregistros = 0;
             List<Departamento> departamentos =
-                this.repo.GetGrupoDepartamentos(posicion.Value, "madrid");
+                this.repo.GetGrupoDepartamentos
+                (posicion.Value, ref numeroregistros);
+            ViewData["NUMEROREGISTROS"] = numeroregistros;
             return View(departamentos);
         }
 

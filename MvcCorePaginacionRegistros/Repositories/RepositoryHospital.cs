@@ -4,6 +4,7 @@ using MvcCorePaginacionRegistros.Data;
 using MvcCorePaginacionRegistros.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -47,16 +48,25 @@ namespace MvcCorePaginacionRegistros.Repositories
         {
             this.context = context;
         }
-
-        public List<Departamento> GetGrupoDepartamentos(int posicion)
+        
+        public List<Departamento> 
+            GetGrupoDepartamentos(int posicion
+            , ref int numeroregistros)
         {
-            string sql = "SP_PAGINARGRUPO_DEPARTAMENTOS @POSICION";
+            string sql = "SP_PAGINARGRUPO_DEPARTAMENTOS @POSICION "
+                + ", @registros OUT";
             SqlParameter paramposicion =
                 new SqlParameter("@POSICION", posicion);
+            SqlParameter paramregistros =
+                new SqlParameter("@registros", -1);
+            paramregistros.Direction = ParameterDirection.Output;
             var consulta =
                 this.context.Departamentos.FromSqlRaw
-                (sql, paramposicion);
-            return consulta.ToList();
+                (sql, paramposicion, paramregistros);
+            List<Departamento> departamentos = consulta.ToList();
+            numeroregistros = (int)paramregistros.Value;
+            //COMO ENVIAMOS EL NUMERO DE REGISTROS AL CONTROLLER????
+            return departamentos;
         }
 
         public int GetNumeroRegistros()
